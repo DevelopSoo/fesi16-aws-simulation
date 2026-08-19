@@ -1,0 +1,20 @@
+version: 0.0
+os: linux
+
+# 배포 패키지 전체(source: /)를 EC2의 /home/ubuntu/nextjs-aws-test로 복사한다.
+files:
+  - source: /
+    destination: /home/ubuntu/nextjs-aws-test
+
+# 복사된 파일들의 소유자를 ubuntu 유저/그룹으로 설정한다.
+permissions:
+  - object: /
+    owner: ubuntu
+    group: ubuntu
+
+# 파일 복사가 완료된 후 앱이 실행되는 단계에서 scripts/start-nextjs.sh를 ubuntu 유저(이때 위 permissions와 일치시켜야 권한 문제가 발생하지 않습니다)로 실행합니다. 60초 안에 끝나지 않으면 배포 실패 처리합니다.
+hooks:
+  ApplicationStart:
+    - location: scripts/start-nextjs.sh
+      timeout: 60
+      runas: ubuntu
